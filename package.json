@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://yourusername.github.io/establishing_a_high_tech_crime_response_system/",
+  \"homepage\": \"https://chandru-wp.github.io/Crime_report_frontend/\",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

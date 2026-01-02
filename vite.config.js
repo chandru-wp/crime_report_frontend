@@ -4,6 +4,6 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/establishing_a_high_tech_crime_response_system/',
+  base: '/Crime_report_frontend/',
   plugins: [react(),tailwindcss(),],
 })
