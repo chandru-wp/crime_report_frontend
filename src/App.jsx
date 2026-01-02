@@ -8,7 +8,7 @@ import Status from "./pages/Status";
 
 function App() {
   return (
-    <Router>
+    <Router basename="/Crime_report_frontend">
       <Routes>
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/status" element={<Status />} />
