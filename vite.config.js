@@ -4,6 +4,18 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: './',
-  plugins: [react(),tailwindcss(),],
+  base: '/Crime_report_frontend/',
+  plugins: [react(),tailwindcss()],
+  build: {
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'recharts-vendor': ['recharts'],
+          'pdf-vendor': ['jspdf', 'jspdf-autotable'],
+          'axios-vendor': ['axios'],
+        }
+      }
+    }
+  }
 })
