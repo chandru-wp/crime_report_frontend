@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import API_BASE_URL from "../config";
 import {
   BarChart,
   Bar,
@@ -44,7 +45,7 @@ export default function AdminDashboard() {
   const fetchCrimes = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:5000/api/crimes", {
+      const response = await axios.get(`${API_BASE_URL}/api/crimes`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setCrimes(response.data);
@@ -68,7 +69,7 @@ export default function AdminDashboard() {
     try {
       const token = localStorage.getItem("token");
       await axios.patch(
-        `http://localhost:5000/api/crimes/${crimeId}/status`,
+        `${API_BASE_URL}/api/crimes/${crimeId}/status`,
         { status: nextStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -84,7 +85,7 @@ export default function AdminDashboard() {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:5000/api/crimes/${crimeId}`, {
+      await axios.delete(`${API_BASE_URL}/api/crimes/${crimeId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchCrimes();
@@ -110,7 +111,7 @@ export default function AdminDashboard() {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.patch(
-        `http://localhost:5000/api/crimes/${editingCrime}`,
+        `${API_BASE_URL}/api/crimes/${editingCrime}`,
         {
           title: editFormData.title,
           description: editFormData.description,

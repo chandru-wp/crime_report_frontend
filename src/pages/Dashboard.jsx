@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import CrimeForm from "../components/CrimeForm";
+import API_BASE_URL from "../config";
 
 export default function Dashboard() {
   const [crimes, setCrimes] = useState([]);
@@ -25,7 +26,7 @@ export default function Dashboard() {
   const fetchCrimes = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:5000/api/crimes", {
+      const response = await axios.get(`${API_BASE_URL}/api/crimes`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setCrimes(response.data);

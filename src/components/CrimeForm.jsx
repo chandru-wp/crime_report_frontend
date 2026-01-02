@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import API_BASE_URL from "../config";
 
 export default function CrimeForm({ onSuccess }) {
   const [data, setData] = useState({
@@ -24,7 +25,7 @@ export default function CrimeForm({ onSuccess }) {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.post("http://localhost:5000/api/crimes", data, {
+      await axios.post(`${API_BASE_URL}/api/crimes`, data, {
         headers: { Authorization: `Bearer ${token}` }
       });
       alert("Crime Reported Successfully");
