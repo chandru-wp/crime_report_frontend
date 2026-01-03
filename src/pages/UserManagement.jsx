@@ -6,7 +6,13 @@ import API_BASE_URL from "../config";
 export default function UserManagement() {
   const [users, setUsers] = useState([]);
   const [showAddAdmin, setShowAddAdmin] = useState(false);
+  const [editingUserId, setEditingUserId] = useState(null);
   const [newAdmin, setNewAdmin] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+  const [editFormData, setEditFormData] = useState({
     name: "",
     email: "",
     password: "",
@@ -112,6 +118,35 @@ export default function UserManagement() {
     }
   };
 
+  const handleEditClick = (u) => {
+    setEditingUserId(u.id);
+    setEditFormData({ name: u.name, email: u.email, password: "" });
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+
+    try {
+      const token = localStorage.getItem("token");
+      await axios.patch(
+        `${API_BASE_URL}/api/auth/users/${editingUserId}`,
+        editFormData,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setSuccess("User updated successfully");
+      setEditingUserId(null);
+      setEditFormData({ name: "", email: "", password: "" });
+      setTimeout(() => setSuccess(""), 3000);
+      fetchUsers();
+    } catch (error) {
+      setError(error.response?.data?.message || "Failed to update user");
+      setTimeout(() => setError(""), 3000);
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -212,6 +247,59 @@ export default function UserManagement() {
           </div>
         )}
 
+        {/* Edit User Form */}
+        {editingUserId && (
+          <div className="bg-white p-6 rounded-lg shadow mb-6 border-l-4 border-blue-600">
+            <h2 className="text-xl font-semibold mb-4">Edit User</h2>
+            <form onSubmit={handleEditSubmit}>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <input
+                  type="text"
+                  placeholder="Name"
+                  className="border px-4 py-2 rounded"
+                  value={editFormData.name}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, name: e.target.value })
+                  }
+                  required
+                />
+                <input
+                  type="email"
+                  placeholder="Email"
+                  className="border px-4 py-2 rounded"
+                  value={editFormData.email}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, email: e.target.value })
+                  }
+                  required
+                />
+                <input
+                  type="password"
+                  placeholder="New Password (leave empty to keep current)"
+                  className="border px-4 py-2 rounded"
+                  value={editFormData.password}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, password: e.target.value })
+                  }
+                />
+              </div>
+              <button
+                type="submit"
+                className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 mr-2"
+              >
+                Save Changes
+              </button>
+              <button
+                type="button"
+                onClick={() => setEditingUserId(null)}
+                className="bg-gray-400 text-white px-6 py-2 rounded hover:bg-gray-500"
+              >
+                Cancel
+              </button>
+            </form>
+          </div>
+        )}
+
         {/* Users Table */}
         <div className="bg-white rounded-lg shadow">
           <div className="p-6 border-b border-gray-200">
@@ -262,20 +350,26 @@ export default function UserManagement() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {new Date(u.createdAt).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm flex gap-2">
+                      <button
+                        onClick={() => handleEditClick(u)}
+                        className="px-3 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white text-xs"
+                      >
+                        Edit
+                      </button>
                       <button
                         onClick={() => handleRoleChange(u.id, u.role)}
-                        className={`px-4 py-2 rounded mr-2 ${
+                        className={`px-3 py-2 rounded text-white text-xs ${
                           u.role === "admin"
                             ? "bg-yellow-600 hover:bg-yellow-700"
                             : "bg-green-600 hover:bg-green-700"
-                        } text-white`}
+                        }`}
                       >
-                        Change to {u.role === "admin" ? "User" : "Admin"}
+                        {u.role === "admin" ? "User" : "Admin"}
                       </button>
                       <button
                         onClick={() => handleDeleteUser(u.id, u.name)}
-                        className="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-white"
+                        className="px-3 py-2 rounded bg-red-600 hover:bg-red-700 text-white text-xs"
                       >
                         Delete
                       </button>
