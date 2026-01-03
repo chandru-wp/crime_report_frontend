@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import API_BASE_URL from "../config";
 
 export default function UserManagement() {
   const [users, setUsers] = useState([]);
@@ -31,13 +32,18 @@ export default function UserManagement() {
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:5000/api/auth/users", {
+      const response = await axios.get(`${API_BASE_URL}/api/auth/users`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUsers(response.data);
+      setError("");
     } catch (error) {
       console.error("Error fetching users:", error);
-      setError("Failed to fetch users");
+      if (error.code === 'ERR_NETWORK') {
+        setError("Cannot connect to server. Please ensure the backend is running.");
+      } else {
+        setError(error.response?.data?.message || "Failed to fetch users");
+      }
     }
   };
 
@@ -49,7 +55,7 @@ export default function UserManagement() {
     try {
       const token = localStorage.getItem("token");
       await axios.patch(
-        `http://localhost:5000/api/auth/users/${userId}/role`,
+        `${API_BASE_URL}/api/auth/users/${userId}/role`,
         { role: newRole },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -71,7 +77,7 @@ export default function UserManagement() {
     try {
       const token = localStorage.getItem("token");
       await axios.post(
-        "http://localhost:5000/api/auth/create-admin",
+        `${API_BASE_URL}/api/auth/create-admin`,
         newAdmin,
         { headers: { Authorization: `Bearer ${token}` } }
       );
