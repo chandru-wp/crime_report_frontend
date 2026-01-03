@@ -25,6 +25,8 @@ export default function AdminDashboard() {
   const [editingCrime, setEditingCrime] = useState(null);
   const [editFormData, setEditFormData] = useState({});
   const [editError, setEditError] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
   const navigate = useNavigate();
 
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
@@ -73,6 +75,7 @@ export default function AdminDashboard() {
         { status: nextStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );
+      setCurrentPage(1);
       fetchCrimes();
     } catch (error) {
       console.error("Error updating status:", error);
@@ -88,6 +91,7 @@ export default function AdminDashboard() {
       await axios.delete(`${API_BASE_URL}/api/crimes/${crimeId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
+      setCurrentPage(1);
       fetchCrimes();
     } catch (error) {
       console.error("Error deleting crime:", error);
@@ -195,6 +199,24 @@ export default function AdminDashboard() {
     filter === "all"
       ? crimes
       : crimes.filter((crime) => crime.status === filter);
+
+  // Pagination
+  const totalPages = Math.ceil(filteredCrimes.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedCrimes = filteredCrimes.slice(startIndex, endIndex);
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
 
   // Analytics data
   const statusData = [
@@ -337,7 +359,10 @@ export default function AdminDashboard() {
                 <select
                   className="border rounded px-4 py-2"
                   value={filter}
-                  onChange={(e) => setFilter(e.target.value)}
+                  onChange={(e) => {
+                    setFilter(e.target.value);
+                    setCurrentPage(1);
+                  }}
                 >
                   <option value="all">All Status</option>
                   <option value="Pending">Pending</option>
@@ -379,7 +404,7 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredCrimes.map((crime) => (
+                {paginatedCrimes.map((crime) => (
                   <tr key={crime.id}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {crime.title}
@@ -432,6 +457,29 @@ export default function AdminDashboard() {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Pagination Controls */}
+          <div className="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-between items-center">
+            <div className="text-sm text-gray-600">
+              Page {currentPage} of {totalPages || 1} • Showing {paginatedCrimes.length} of {filteredCrimes.length} records
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={handlePrevPage}
+                disabled={currentPage === 1}
+                className="px-4 py-2 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition"
+              >
+                ← Previous
+              </button>
+              <button
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages || totalPages === 0}
+                className="px-4 py-2 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition"
+              >
+                Next →
+              </button>
+            </div>
           </div>
         </div>
 
