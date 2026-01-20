@@ -387,6 +387,9 @@ export default function AdminDashboard() {
                     Title
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    Reported By
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     Description
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
@@ -408,6 +411,12 @@ export default function AdminDashboard() {
                   <tr key={crime.id}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {crime.title}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <div className="flex flex-col">
+                        <span className="font-medium text-gray-900">{crime.user?.name || "Unknown"}</span>
+                        <span className="text-xs text-gray-400">{crime.user?.email}</span>
+                      </div>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-500">
                       {crime.description}
